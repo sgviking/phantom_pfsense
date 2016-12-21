@@ -4,10 +4,10 @@ from pfsense.pfsense import pfSense
 
 class TestClass:
 
-    INCIDENT_IP = "4.4.4.4"
+    INCIDENT_IP = "1.1.1.1"
     NONEXISTENT_IP = "256.256.256.256"
 
-    def setUp(self):
+    def __init__(self):
         url = os.environ["PFSENSE_URL"]
         password = os.environ["PFSENSE_PASS"]
         self.pf = pfSense(url, password)
