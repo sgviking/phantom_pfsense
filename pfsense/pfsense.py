@@ -83,9 +83,7 @@ class pfSense():
             self._password,
             self._config
         )
-        # apply_rules = \
-        #    "pfSense_handle_custom_code('/usr/local/pkg/firewall_rules/apply');"
-        # print self._server.pfsense.exec_php(self._password, apply_rules)
+        self._server.pfsense.filter_configure(self._password)
         return True
 
     def _get_rule_index(self, ip):
@@ -126,9 +124,6 @@ class pfSense():
             self._config["filter"]["rule"].insert(0, lan_rule)
 
         self._push_config()
-        # pfSense reorders the rules that were inserted in the beginning of the
-        # rules so that the new LAN rules are at the beginnig of the LAN rules.
-        self._get_config()
         return True
 
     def unblock_ip(self, ip):
