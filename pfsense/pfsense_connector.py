@@ -14,15 +14,7 @@ from phantom.action_result import ActionResult
 from pfsense_consts import *
 from pfsense import *
 
-import simplejson as json
 import datetime
-
-
-def _json_fallback(obj):
-    if isinstance(obj, datetime.datetime):
-        return obj.isoformat()
-    else:
-        return obj
 
 
 # Define the App Class
@@ -63,64 +55,47 @@ class pfSenseConnector(BaseConnector):
 
     def _handle_block_ip(self, param):
 
-        # Get the config
         config = self.get_config()
-
         self.debug_print("param", param)
 
-        # Add an action result to the App Run
         action_result = ActionResult(dict(param))
         self.add_action_result(action_result)
-#
-#        # get the server
-#        server = config.get(SAMPLEWHOIS_JSON_SERVER)
-#
-#        domain = param[SAMPLEWHOIS_JSON_DOMAIN]
-#
-#        try:
-#            if (server):
-#                self.save_progress("Using Server {0}".format(server))
-#                raw_whois_resp = pythonwhois.net.get_whois_raw(domain, server)
-#                whois_response = pythonwhois.parse.parse_raw_whois(raw_whois_resp)
-#            else:
-#                self.save_progress("Using default root Server")
-#                whois_response = pythonwhois.get_whois(domain)
-#        except Exception as e:
-#            action_result.set_status(phantom.APP_ERROR, SAMPLEWHOIS_ERR_QUERY, e)
-#            return action_result.get_status()
-#
-#        # Need to work on the json, it contains certain fields that are not
-#        # parsable, so will need to go the 'fallback' way.
-#        # TODO: Find a better way to do this
-#        whois_response = json.dumps(whois_response, default=_json_fallback)
-#        whois_response = json.loads(whois_response)
-#        action_result.add_data(whois_response)
-#
-#        # Even if the query was successfull the data might not be available
-#        if (self._response_no_data(whois_response, domain)):
-#            return action_result.set_status(phantom.APP_ERROR, SAMPLEWHOIS_ERR_QUERY_RETURNED_NO_DATA)
-#
-#        # get the registrant
-#        if ('contacts' in whois_response and 'registrant' in whois_response['contacts']):
-#            registrant = whois_response['contacts']['registrant']
-#            wanted_keys = ['organization', 'city', 'country']
-#            summary = {x: registrant.get(x, '') for x in wanted_keys}
-#            action_result.update_summary(summary)
-#            action_result.set_status(phantom.APP_SUCCESS)
-#        else:
-#            action_result.set_status(phantom.APP_SUCCESS, SAMPLEWHOIS_SUCC_QUERY)
-        action_result.set_status(phantom.APP_SUCCESS, PFSENSE_SUCC_QUERY)
+
+        url = config[PFSENSE_URL]
+        ip = param[PFSENSE_INCIDENT_IP]
+
+        try:
+            self.save_progress(
+                "Block IP {} on pfSense asset at {}".format(ip, url))
+            self.pf.block_ip(ip)
+        except Exception as e:
+            action_result.set_status(phantom.APP_ERROR, PFSENSE_ERR_BLOCK, e)
+            return action_result.get_status()
+
+        action_result.set_status(phantom.APP_SUCCESS, PFSENSE_SUCC_BLOCK)
         return action_result.get_status()
 
     def _handle_unblock_ip(self, param):
+
         config = self.get_config()
         self.debug_print("param", param)
-        # Add an action result to the App Run
+
         action_result = ActionResult(dict(param))
         self.add_action_result(action_result)
-        action_result.set_status(phantom.APP_SUCCESS, PFSENSE_SUCC_QUERY)
-        return action_result.get_status()
 
+        url = config[PFSENSE_URL]
+        ip = param[PFSENSE_INCIDENT_IP]
+
+        try:
+            self.save_progress(
+                "Unblock IP {} on pfSense asset at {}".format(ip, url))
+            self.pf.unblock_ip(ip)
+        except Exception as e:
+            action_result.set_status(phantom.APP_ERROR, PFSENSE_ERR_UNBLOCK, e)
+            return action_result.get_status()
+
+        action_result.set_status(phantom.APP_SUCCESS, PFSENSE_SUCC_UNBLOCK)
+        return action_result.get_status()
 
     def handle_action(self, param):
 
