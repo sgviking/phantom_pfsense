@@ -1,0 +1,156 @@
+{
+    "appid"       : "6102dbdd-8115-43c3-93f5-ef26fe98c59e",
+    "name"      : "pfSense App",
+    "description" : "Control pfSense asset",
+    "publisher": "Dan Daggett",
+    "package_name": "phantom_pfsense",
+    "type": "firewall",
+    "license": "Copyright (c) Dan Daggett",
+    "main_module" : "pfsense_connector.pyc",
+    "app_version": "0.1.6",
+    "utctime_updated": "2016-12-20T16:28:30.000000Z",
+    "product_vendor": "Generic",
+    "product_name": "pfSense",
+    "product_version_regex": ".*",
+    "min_phantom_version": "1.2.236",
+    "logo": "pfsense.png",
+    "configuration": {
+          "server": {
+            "description": "Server IP/Hostname",
+            "data_type": "string",
+            "order": 1,
+            "required": true
+          },
+          "password": {
+            "data_type": "password",
+            "order": 2,
+            "description": "Password",
+            "required": true
+          }
+    },
+    "actions": [
+      {
+        "action": "test connectivity",
+        "description": "Validate the asset configuration for connectivity.",
+        "type": "test",
+        "identifier": "test_asset_connectivity",
+        "read_only": true,
+        "parameters": {
+        },
+        "output": [],
+        "versions":"EQ(*)"
+      },
+      {
+        "action": "block ip",
+        "description": "Block an IP",
+        "verbose": "This action sets up incoming and outgoing blocks on the specified IP. NOTE: Multiple <b>block ip</b> actions will <i>not</i> result in multiple rules being added.",
+        "type": "contain",
+        "identifier": "block_ip",
+        "undo":"unblock ip",
+        "read_only": false,
+        "parameters": {
+          "ip": {
+            "description": "IP to block",
+            "data_type": "string",
+            "order": 0,
+            "contains": [ "ip" ],
+            "primary": true,
+            "required": true
+          }
+        },
+        "render": {
+          "width": 12,
+          "title": "Block Ip",
+          "type": "table",
+          "height": 5
+        },
+        "output": [
+          {
+            "data_path": "action_result.parameter.ip",
+            "data_type": "string",
+            "column_name": "IP",
+            "column_order": 0,
+            "contains": [ "ip" ]
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string",
+            "column_name": "Status",
+            "column_order": 1
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string",
+            "column_name": "Message",
+            "column_order": 2
+          },
+
+          {
+            "data_path": "summary.total_objects",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "summary.total_objects_successful",
+            "data_type": "numeric"
+          }
+        ],
+        "versions":"EQ(*)"
+      },
+      {
+        "action": "unblock ip",
+        "description": "Unblock an IP",
+        "verbose": "This action removes the block role from pfSense for specified IP address.",
+        "type": "contain",
+        "identifier": "unblock_ip",
+        "undo":"unblock ip",
+        "read_only": false,
+        "parameters": {
+          "ip": {
+            "description": "IP to unblock",
+            "data_type": "string",
+            "order": 0,
+            "contains": [ "ip" ],
+            "primary": true,
+            "required": true
+          }
+        },
+        "render": {
+          "width": 12,
+          "title": "Unblock Ip",
+          "type": "table",
+          "height": 5
+        },
+        "output": [
+          {
+            "data_path": "action_result.parameter.ip",
+            "data_type": "string",
+            "column_name": "IP",
+            "column_order": 0,
+            "contains": [ "ip" ]
+          },
+          {
+            "data_path": "action_result.status",
+            "data_type": "string",
+            "column_name": "Status",
+            "column_order": 1
+          },
+          {
+            "data_path": "action_result.message",
+            "data_type": "string",
+            "column_name": "Message",
+            "column_order": 2
+          },
+
+          {
+            "data_path": "summary.total_objects",
+            "data_type": "numeric"
+          },
+          {
+            "data_path": "summary.total_objects_successful",
+            "data_type": "numeric"
+          }
+        ],
+        "versions":"EQ(*)"
+      }
+    ]
+}
