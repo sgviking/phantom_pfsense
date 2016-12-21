@@ -7,7 +7,7 @@
     "type": "firewall",
     "license": "Copyright (c) Dan Daggett",
     "main_module" : "pfsense_connector.pyc",
-    "app_version": "0.1.8",
+    "app_version": "1.0.0",
     "utctime_updated": "2016-12-20T16:28:30.000000Z",
     "product_vendor": "Generic",
     "product_name": "pfSense",
