@@ -88,13 +88,19 @@ class pfSense():
         # print self._server.pfsense.exec_php(self._password, apply_rules)
         return True
 
-    def rule_exists(self, ip):
-        for rule in self._rules:
+    def _get_rule_index(self, ip):
+        for i, rule in enumerate(self._rules):
             if rule["destination"].get("address", None) == ip and \
                     rule["interface"] == "lan" and \
                     rule["descr"].startswith("Phantom automated rule"):
-                return True
-        return False
+                return i
+        return None
+
+    def rule_exists(self, ip):
+        self._get_config()
+        if self._get_rule_index(ip) is None:
+            return False
+        return True
 
     def _current_epoch_string(self):
         return str(int(time.mktime(datetime.datetime.now().timetuple())))
@@ -121,10 +127,16 @@ class pfSense():
 
         self._push_config()
         # pfSense reorders the rules that were inserted in the beginning of the
-        # rulese so that the new LAN rules are at the beginnig of the LAN rules.
+        # rules so that the new LAN rules are at the beginnig of the LAN rules.
         self._get_config()
         return True
 
     def unblock_ip(self, ip):
         self._get_config()
+
+        index = self._get_rule_index(ip)
+        if index is not None:
+            del self._config["filter"]["rule"][index]
+
+        self._push_config()
         return True
