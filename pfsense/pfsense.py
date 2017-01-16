@@ -10,6 +10,7 @@ import ssl
 import datetime
 import time
 import copy
+import json
 
 
 class pfSense():
@@ -51,6 +52,10 @@ class pfSense():
         self._password = password
         self._sections = ["filter"]
         self._connect()
+
+    def __repr__(self):
+        self._get_config()
+        return json.dumps(self._rules)
 
     def _connect(self):
 
