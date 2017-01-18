@@ -14,8 +14,6 @@ from phantom.action_result import ActionResult
 from pfsense_consts import *
 from pfsense import *
 
-import datetime
-
 
 # Define the App Class
 class pfSenseConnector(BaseConnector):
@@ -45,8 +43,9 @@ class pfSenseConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES,
                            "Connecting to pfSense asset to check connectivity")
 
-        if pf.ping() == False:
-            self.set_status(phantom.APP_ERROR, PFSENSE_ERR_SERVER_CONNECTION, e)
+        if self.pf.ping() == False:
+            self.set_status(phantom.APP_ERROR, PFSENSE_ERR_SERVER_CONNECTION,
+                            "Unable to reach pfSense server")
             self.append_to_message(PFSENSE_ERR_CONNECTIVITY_TEST)
             return self.get_status()
 
